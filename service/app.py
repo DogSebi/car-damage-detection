@@ -16,7 +16,6 @@ from service.find_damage import analyze_damage
 from service.read_image import read_image, image_to_img_src
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="service/static"))
 templates = Jinja2Templates(directory="service/templates")
 
 
