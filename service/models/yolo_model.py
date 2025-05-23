@@ -7,7 +7,7 @@ model.to(device)
 
 part_names = list(model.names.values())
 
-def predict_parts(img_bgr):
+async def predict_parts(img_bgr):
     results = model.predict(source=img_bgr, imgsz=640)
     masks = results[0].masks.data.cpu().numpy()
     class_ids = results[0].boxes.cls.cpu().numpy().astype(int)

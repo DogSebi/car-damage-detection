@@ -23,13 +23,13 @@ def analyze_damage(parts_masks, damage_mask, original_image, part_names=None):
         if damage_pixels == 0:
             continue
 
-        damage_ratio = damage_pixels / part_pixels
+        damage_ratio = np.round(damage_pixels / part_pixels, 4)
 
         part_name = part_names[i] if part_names and i < len(
             part_names) else f"Part {i}"
         damage_report.append({
             "part": part_name,
-            "damage_percent": f'{round(100 * damage_ratio, 1)}%',
+            "damage_percent": damage_ratio
         })
 
         contours, _ = cv2.findContours(
@@ -37,16 +37,10 @@ def analyze_damage(parts_masks, damage_mask, original_image, part_names=None):
         cv2.drawContours(vis_image, contours, -1, COLORS[i % len(COLORS)], 2)
 
         M = cv2.moments(part_area)
-        if M["m00"] > 0:
-            cx = int(M["m10"] / M["m00"])
-            cy = int(M["m01"] / M["m00"])
-            text = f"{part_name}: {round(damage_ratio * 100, 1)}%"
-            cv2.putText(vis_image, text, (cx - 50, cy), cv2.FONT_HERSHEY_SIMPLEX,
-                        0.5, COLORS[i % len(COLORS)], 2, cv2.LINE_AA)
 
     if not damage_report and np.sum(damage_mask > 0) > 0:
         damage_report.append({
-            "part": "Обнаружено повреждение вне известных частей автомобиля",
+            "part": "Повреждение вне сегментированных частей автомобиля",
             "damage_percent": "Неизвестно",
         })
 
@@ -54,4 +48,4 @@ def analyze_damage(parts_masks, damage_mask, original_image, part_names=None):
     red_mask[:, :, 2] = (damage_mask > 0).astype(np.uint8) * 255
     cv2.addWeighted(red_mask, 0.4, vis_image, 0.6, 0, vis_image)
 
-    return vis_image, {"damaged_parts": damage_report}
+    return vis_image, damage_report

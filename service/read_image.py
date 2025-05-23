@@ -11,3 +11,6 @@ async def read_image(file):
 
     image_resized = cv2.resize(image, (640, 640))
     return image_resized
+
+def image_to_img_src(image) -> str:
+    return f"data:image/png;base64,{image}"

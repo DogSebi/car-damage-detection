@@ -1,4 +1,5 @@
 import requests
+import time
 
 
 class CarDamageFinderClient:
@@ -9,7 +10,7 @@ class CarDamageFinderClient:
         with open(image_path, "rb") as f:
             files = {"file": ("image.jpg", f, "image/jpeg")}
             response = requests.post(
-                f"http://{self.host}:8000/analyze", files=files)
+                f"http://{self.host}:8000/api", files=files)
             result = response.json()
 
         return result

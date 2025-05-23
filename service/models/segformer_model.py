@@ -8,7 +8,7 @@ processor = SegformerImageProcessor.from_pretrained("./segformer_weights")
 model = SegformerForSemanticSegmentation.from_pretrained("./segformer_weights").to(device)
 model.eval()
 
-def predict_damage(img_bgr):
+async def predict_damage(img_bgr):
     img_rgb = Image.fromarray(cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB))
     inputs = processor(images=img_rgb, return_tensors="pt").to(device)
     with torch.no_grad():
