@@ -5,13 +5,25 @@
  - Состав: Александр Хасаметдинов
 ## Запуск сервиса и взаимодействие с ним через веб-интерфейс
  1. Склонируйте репозиторий
- 2. Соберите образ командой `docker build -t dogsebi/car_damage_service:v2 .`
- 3. Запустите сервис командой `docker run -p 8000:8000 dogsebi/car_damage_service:v2`
+ 2. Соберите образ командой `docker build -t car_damage_service .`
+ 3. Запустите сервис:
+     - Если вы используете CPU: `bash run.sh`
+     - Если вы используете GPU:
+    `sudo apt update`
+    `sudo apt install -y nvidia-container-toolkit`
+    `sudo systemctl restart docker`
+    `docker run --gpus all -p 8000:8000 car_damage_service`
  4. Перейдите в браузере по адресу `http://localhost:8000/`
  5. Загрузите фото автомобиля в форму для загрузки файлов
 ## Запуск сервиса и взаимодействие с ним через API
- 1. Склонировать репозиторий
- 2. Собрать образ командой `docker build -t dogsebi/car_damage_service:v2 .`
- 3. Запустить сервис командой `docker run -p 8000:8000 dogsebi/car_damage_service:v2`
- 4. В терминале выполнить команду python3 `service/client.py`
- 5. Ввести путь к изображению на вашем устройстве
+ 1. Склонируйте репозиторий
+ 2. Соберите образ командой `docker build -t car_damage_service .`
+ 3. Запустите сервис:
+     - Если вы используете CPU: `bash run.sh`
+     - Если вы используете GPU:
+    `sudo apt update`
+    `sudo apt install -y nvidia-container-toolkit`
+    `sudo systemctl restart docker`
+    `docker run --gpus all -p 8000:8000 car_damage_service`
+ 4. В терминале выполните команду python3 `service/client.py`
+ 5. Введите путь к изображению на вашем устройстве

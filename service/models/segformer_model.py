@@ -3,7 +3,7 @@ from transformers import SegformerForSemanticSegmentation, SegformerImageProcess
 from PIL import Image
 import cv2
 
-device = torch.device("cuda:1") if torch.cuda.is_available() else "cpu"
+device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 processor = SegformerImageProcessor.from_pretrained("./segformer_weights")
 model = SegformerForSemanticSegmentation.from_pretrained("./segformer_weights").to(device)
 model.eval()

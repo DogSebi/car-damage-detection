@@ -1,7 +1,7 @@
 from ultralytics import YOLO
 import torch
 
-device = torch.device("cuda:0") if torch.cuda.is_available() else "cpu"
+device = torch.device("cuda") if torch.cuda.is_available() else "cpu"
 model = YOLO("./yolo_weights/best.pt")
 model.to(device)
 
