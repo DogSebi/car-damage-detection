@@ -25,5 +25,5 @@
     `sudo apt install -y nvidia-container-toolkit`  
     `sudo systemctl restart docker`  
     `docker run --gpus all -p 8000:8000 car_damage_service`  
- 4. В терминале выполните команду python3 `service/client.py`
+ 4. В терминале выполните команду `python3 service/client.py`
  5. Введите путь к изображению на вашем устройстве
