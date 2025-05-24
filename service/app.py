@@ -2,6 +2,7 @@ import cv2
 import base64
 import uvicorn
 import traceback
+import asyncio
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi import Request, Response, Form
@@ -13,7 +14,7 @@ from fastapi.responses import JSONResponse
 from service.models.yolo_model import predict_parts
 from service.models.segformer_model import predict_damage
 from service.find_damage import analyze_damage
-from service.read_image import read_image, image_to_img_src
+from service.image_process import read_image, image_to_img_src, image2bytes
 
 app = FastAPI()
 templates = Jinja2Templates(directory="service/templates")
@@ -29,8 +30,10 @@ async def analyze_image(request: Request, file: UploadFile = File(...)):
     ctx = {}
     try:
         image = await read_image(file)
-        damage_mask = await predict_damage(image)
-        parts_masks, part_names_for_masks = await predict_parts(image)
+        damage_task = asyncio.to_thread(predict_damage, image)
+        parts_task = asyncio.to_thread(predict_parts, image)
+        damage_mask = await damage_task
+        parts_masks, part_names_for_masks = await parts_task
 
         result_img, report = analyze_damage(
             parts_masks=parts_masks,
@@ -39,11 +42,12 @@ async def analyze_image(request: Request, file: UploadFile = File(...)):
             part_names=part_names_for_masks
         )
 
-        _, img_encoded = cv2.imencode(".jpg", result_img)
-        img_base64 = base64.b64encode(img_encoded.tobytes()).decode("utf-8")
+        predicted_image = image2bytes(result_img)
+        original_image = image2bytes(image)
 
         ctx.update(
-            image=image_to_img_src(img_base64),
+            predicted_image=image_to_img_src(predicted_image),
+            original_image=image_to_img_src(original_image),
             report=report
         )
 
@@ -58,8 +62,10 @@ async def analyze_image(request: Request, file: UploadFile = File(...)):
 async def analyze_image(file: UploadFile = File(...)):
     try:
         image = await read_image(file)
-        damage_mask = await predict_damage(image)
-        parts_masks, part_names_for_masks = await predict_parts(image)
+        damage_task = asyncio.to_thread(predict_damage, image)
+        parts_task = asyncio.to_thread(predict_parts, image)
+        damage_mask = await damage_task
+        parts_masks, part_names_for_masks = await parts_task
 
         result_img, report = analyze_damage(
             parts_masks=parts_masks,
@@ -71,8 +77,7 @@ async def analyze_image(file: UploadFile = File(...)):
         if not report:
             report.append("Повреждений не выявлено")
 
-        _, img_encoded = cv2.imencode(".jpg", result_img)
-        img_base64 = base64.b64encode(img_encoded.tobytes()).decode("utf-8")
+        img_base64 = image2bytes(result_img)
 
         return JSONResponse(content={
             "report": report,

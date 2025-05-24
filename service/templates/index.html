@@ -10,7 +10,7 @@
     />
   </head>
   <body class="bg-light">
-    {% if not error and not image %}
+    {% if not error and not original_image %}
     <div class="container mt-2">
       <h1 class="display-3 text-center">
         Сервис по распознаванию автомобильных повреждений
@@ -31,26 +31,33 @@
         Подробнее: {{ error }}
       </div>
     </div>
-    {% endif %} {% if image %}
+    {% endif %} {% if original_image %}
     <div class="container mt-2">
       <h1 class="display-3 text-center">
         Сервис по распознаванию автомобильных повреждений
       </h1>
     </div>
     <div class="container mt-4">
-      <img
-        src=" {{ image }}",
-        width="500"
-        class="img-fluid rounded mx-auto d-block"
-        alt="Здесь должно быть ваше загруженное изображение"
-      />
+      <div class="row justify-content-center">
+        <div class="col-md-5 text-center">
+          <img
+            src="{{ original_image }}"
+            class="img-fluid rounded mb-2"
+            alt="Оригинал"
+          />
+          <p class="fs-5 fw-light fst-italic">Исходное изображение</p>
+        </div>
+        <div class="col-md-5 text-center">
+          <img
+            src="{{ predicted_image }}"
+            class="img-fluid rounded mb-2"
+            alt="Результат"
+          />
+          <p class="fs-5 fw-light fst-italic">Обработанное изображение</p>
+        </div>
+      </div>
     </div>
-    <div class="container mt-3">
-      <p class="fs-5 fw-light fst-italic text-center">
-        Обработанное изображение автомобиля
-      </p>
-    </div>
-    {% endif %} {% if not report and image %}
+    {% endif %} {% if not report and original_image %}
     <div class="container mt-4">
       <div class="alert alert-success text-center" role="alert">
         Повреждений не выявлено
