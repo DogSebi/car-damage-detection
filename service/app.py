@@ -3,6 +3,7 @@ import base64
 import uvicorn
 import traceback
 import asyncio
+import time
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi import Request, Response, Form
@@ -29,6 +30,7 @@ def root(request: Request) -> Response:
 async def analyze_image(request: Request, file: UploadFile = File(...)):
     ctx = {}
     try:
+        start = time.time()
         image = await read_image(file)
         damage_task = asyncio.to_thread(predict_damage, image)
         parts_task = asyncio.to_thread(predict_parts, image)
@@ -48,7 +50,8 @@ async def analyze_image(request: Request, file: UploadFile = File(...)):
         ctx.update(
             predicted_image=image_to_img_src(predicted_image),
             original_image=image_to_img_src(original_image),
-            report=report
+            report=report,
+            timing=round(time.time() - start, 3)
         )
 
         return templates.TemplateResponse(request, "index.html", ctx)
